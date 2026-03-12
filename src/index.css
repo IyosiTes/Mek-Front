@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+    --color-main: #FF631F;
+    --color-Hover: #E6551B;
+    --color-sky: #4DB8FF;
+    --color-gray: #F5F5F5;
+    --color-new: #ffc107;
+     --color-dark: #1F1F1F;
+   --color-dgray: #4B5563;
+   --color-nf: #fdf6ec;
+   --color-bird: #FAFAF7;
+
+ --font-family-logo: "Playfair Display", serif;
+ --font-family-main: "Inter", sans-serif;
+}
