@@ -3,9 +3,11 @@ import { Link } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { useAuth } from "../../hooks/useAuth";
 
+
 const ProfileMenu = () => {
-  const { user, logout } = useAuth();
+  
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <div className="relative">
@@ -30,15 +32,7 @@ const ProfileMenu = () => {
             My Account
           </Link>
 
-          <button
-            onClick={() => {
-              logout();
-              setOpen(false);
-            }}
-            className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
-          >
-            Logout
-          </button>
+        
 
         </div>
       )}
@@ -47,3 +41,4 @@ const ProfileMenu = () => {
 };
 
 export default ProfileMenu;
+
