@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-    --color-main: #FF631F;
-    --color-Hover: #E6551B;
+    --color-main: #a83232;
+    --color-Hover: #8c2a2a;
     --color-sky: #4DB8FF;
-    --color-gray: #F5F5F5;
     --color-new: #ffc107;
-     --color-dark: #1F1F1F;
-   --color-dgray: #4B5563;
-   --color-nf: #fdf6ec;
+    --color-dark: #1F1F1F;
+    --color-dgray: #4B5563;
    --color-bird: #FAFAF7;
+   --color-burg: #C9A227;
+   --color-ivory: #F5F2E9;
+   --color-hove: #6B1E1E;
 
- --font-family-logo: "Playfair Display", serif;
- --font-family-main: "Inter", sans-serif;
+ 
 }
+
