@@ -1,4 +1,5 @@
 import type{ Product } from "../types/product";
+import { getImageUrl } from "./getImageUrl";
 
 // Define a guest-specific cart item interface ( for localStorage)
 export interface GuestCartItem {
@@ -7,6 +8,7 @@ export interface GuestCartItem {
   price: string;       // Matches Product.price (string)
   image: string;
   quantity: number;
+  stock: number;
 }
 
 export const getGuestCart = (): GuestCartItem[] => {
@@ -31,7 +33,8 @@ export const addGuestItem = (product: Product, quantity: number) => {
       product_id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image,
+      image: getImageUrl(product.image),
+      stock: product.is_available ? 1 : 0,
       quantity,
     });
   }
