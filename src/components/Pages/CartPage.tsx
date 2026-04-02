@@ -1,22 +1,32 @@
+
 import { useNavigate } from "react-router-dom";
 import LoaderSpinner from "../ui/LoadingSpinner";
 import { useCart } from "../../hooks/usecart";
 import type { CartItem } from "../../types/cart";
 import { useAuth } from "../../hooks/useAuth";
+import CartEmptyPage from "./CartEmptyPage";
+import { getImageUrl } from "../../utils/getImageUrl";
 
 export default function CartPage() {
-  const { data: cart, isLoading, updateItem, removeItem, clearCart } = useCart();
+  const { data: cart, isLoading, removeItem, clearCart } = useCart();
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const handleCheckout = () => {
-  if (!user) {
-    navigate("/login");
-    return;
-  }
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+ const hasOutOfStock = cart?.items?.some(
+    (item) => item.quantity > item.product.stock
+  );
 
-  navigate("/checkout");
-};
+  if (hasOutOfStock) {
+    alert("Some items are out of stock. Please update your cart.");
+    return; // stop navigation
+  }
+    navigate("/checkout");
+  };
 
   if (isLoading) {
     return (
@@ -29,110 +39,99 @@ export default function CartPage() {
   if (!cart || cart.items.length === 0) {
     return (
       <div className="p-10 text-center">
-        <h2 className="text-2xl font-semibold">Your cart is empty</h2>
+        <CartEmptyPage />
       </div>
     );
   }
 
+
   return (
-    <div className="max-w-7xl mx-auto p-4 lg:p-8">
-      <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">Shopping Cart</h1>
+    <div className="max-w-7xl mx-auto mt-15 p-4 lg:p-8">
+      <h1 className="text-3xl font-bold mb-8 text-center lg:text-left">My Cart</h1>
 
       <div className="grid lg:grid-cols-3 gap-8">
         {/* CART ITEMS */}
         <div className="lg:col-span-2 space-y-6">
-          {cart.items.map((item: CartItem) => (
-            <div
-              key={item.id}
-              className="flex flex-col sm:flex-row items-center justify-between bg-white shadow rounded-lg p-4 gap-4"
-            >
-              {/* PRODUCT */}
-              <div className="flex items-center gap-4 w-full sm:w-auto">
-                <img
-                  src={item.product.image ?? "https://picsum.photos/200"}
-                  alt={item.product.name}
-                  className="w-20 h-20 object-cover rounded"
-                />
-                <div>
-                  <h3 className="font-semibold text-lg">{item.product.name}</h3>
-                  <p className="text-gray-500 text-sm">{item.product.price} ETB</p>
-                </div>
-              </div>
+        {cart.items.map((item: CartItem) => (
+    <div
+      key={item.id}
+      className="relative bg-white shadow rounded-lg p-4 flex flex-col sm:flex-row items-center gap-4"
+    >
+      {/* REMOVE BUTTON */}
+      <button
+        onClick={() => removeItem(item.id)}
+        className="absolute top-2 right-2 text-red-600 hover:text-red-800 font-bold text-lg"
+        title="Remove item"
+      >
+        ×
+      </button>
 
-              {/* QUANTITY */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() =>
-                    updateItem({ item_id: item.id, quantity: Math.max(1, item.quantity - 1) })
-                  }
-                  className="px-3 py-1 border rounded"
-                >
-                  -
-                </button>
-                <span className="px-3">{item.quantity}</span>
-                <button
-                  onClick={() => updateItem({ item_id: item.id, quantity: item.quantity + 1 })}
-                  className="px-3 py-1 border rounded"
-                >
-                  +
-                </button>
-              </div>
+      {/* PRODUCT IMAGE + NAME + QUANTITY */}
+      <div className="flex items-center gap-4 w-full sm:w-auto">
+        <img
+          src={getImageUrl(item.product.image) }
+          alt={item.product.name}
+          className="w-20 h-20 object-cover rounded"
+        />
 
-              {/* PRICE */}
-              <div className="font-semibold">{item.total_price} ETB</div>
+        <div className="flex flex-col gap-1">
+          <h3 className="font-semibold text-lg">{item.product.name}</h3>
 
-              {/* REMOVE */}
-              <button
-                onClick={() => removeItem(item.id)}
-                className="text-red-500 hover:text-red-700 text-sm"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+          {item.product.stock === 0 && (
+            <p className="text-xs text-red-500">Out of stock</p>
+          )}
 
-          <div className="flex justify-end">
-            <button
-              onClick={() => clearCart()}
-              className="text-sm underline text-gray-600 hover:text-black"
-            >
-              Clear Shopping Cart
-            </button>
+          <p className="text-sm text-gray-500">
+            Qty: {item.quantity}
+          </p>
+
+          <div className="font-semibold">
+            {item.total_price} ETB
           </div>
         </div>
+      </div>
+    </div>
+      ))}
 
+       {/* CLEAR CART BUTTON (outside map!) */}
+      <div className="flex justify-end mt-4">
+        <button
+        onClick={() => clearCart()}
+        className="text-sm underline text-sky hover:text-black"
+        >
+                      Clear Shopping Cart
+          </button>
+        </div>
+        </div>
         {/* ORDER SUMMARY */}
-        <div className="bg-white shadow-lg rounded-lg p-6 h-fit">
-          <h2 className="text-xl font-semibold mb-6">Order Summary</h2>
+        <div className="bg-white shadow-lg rounded-lg p-6 lg:p-8 h-fit flex flex-col justify-between">
+          <div>
+            <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span>Items</span>
+                <span>{cart.total_items}</span>
+              </div>
 
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <span>Items</span>
-              <span>{cart.total_items}</span>
+              <div className="flex justify-between font-bold text-lg">
+                <span>Total</span>
+                <span>{cart.total_price} ETB</span>
+              </div>
+
+              <p className="text-xs text-red-600 mt-2">
+                * Prices do not include shipping costs
+              </p>
             </div>
-
-            <div className="flex justify-between">
-              <span>Sub Total</span>
-              <span>{cart.total_price} ETB</span>
-            </div>
-
-            <hr />
-
-            <div className="flex justify-between font-bold text-lg">
-              <span>Total</span>
-              <span>{cart.total_price} ETB</span>
-            </div>
-
-            <button
-              onClick={handleCheckout}
-              className="w-full mt-6 bg-main hover:bg-hover text-white py-3 rounded-lg font-semibold"
-            >
-              Proceed to Checkout
-            </button>
           </div>
+
+          <button
+            onClick={handleCheckout}
+            className="w-full mt-6 bg-main hover:bg-hover text-white py-3 rounded-lg font-semibold text-lg"
+          >
+            Proceed to Checkout
+          </button>
         </div>
       </div>
     </div>
   );
 }
-
