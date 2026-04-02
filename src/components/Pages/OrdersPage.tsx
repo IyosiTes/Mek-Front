@@ -3,6 +3,7 @@ import api from "../../api/api";
 import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import LoaderSpinner from "../ui/LoadingSpinner";
 
 interface OrderItem {
   product_name: string;
@@ -48,8 +49,13 @@ const OrdersPage: React.FC = () => {
     fetchOrders();
   }, []);
 
-  if (loading)
-    return <p className="text-center mt-10 text-gray-500">Loading orders...</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <LoaderSpinner size={60} />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto mt-15 px-4 ">
