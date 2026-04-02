@@ -1,11 +1,11 @@
 import SearchBar from "../ui/SearchBar";
-import HeroImage from "../assets/hero.jpg.jpg";
+
 
 export default function Header() {
     return (
     <header
       className="relative w-full h-screen bg-cover bg-center flex flex-col items-center justify-center text-center "
-      style={{ backgroundImage: `url(${HeroImage})` }}
+      style={{ backgroundImage: "url('/hero.jpg')" }}
     >
       <div className="absolute inset-0 bg-black/40"></div>
 
