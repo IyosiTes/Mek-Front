@@ -1,5 +1,4 @@
-
-  import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useAuth } from "./useAuth";
 
@@ -26,24 +25,32 @@ export function useCart() {
 
   // Normalize cart to always Cart shape
   const cartQuery = useQuery<Cart>({
-    queryKey: ["cart"],
-    queryFn: async () => {
-      if (user) {
-        return fetchCart();
-      } else {
-        const guest = getGuestCart();
-        const items: CartItem[] = guest.map((g) => ({
-          id: g.product_id,
-          product: { name: g.name, price: g.price, image: g.image },
-          quantity: g.quantity,
-          total_price: Number(g.price) * g.quantity,
-        }));
-        const total_items = items.reduce((sum, i) => sum + i.quantity, 0);
-        const total_price = items.reduce((sum, i) => sum + i.total_price, 0);
-        return { items, total_items, total_price };
-      }
-    },
-  });
+  queryKey: ["cart"],
+  queryFn: async () => {
+    if (user) {
+      return fetchCart();
+    } else {
+      const guest = getGuestCart();
+
+      const items: CartItem[] = guest.map((g) => ({
+        id: g.product_id,
+        product: {
+          name: g.name,
+          price: g.price.toString(), 
+          image: g.image,
+          stock: g.stock ?? 0, 
+        },
+        quantity: g.quantity,
+        total_price: Number(g.price) * g.quantity,
+      }));
+
+      const total_items = items.reduce((sum, i) => sum + i.quantity, 0);
+      const total_price = items.reduce((sum, i) => sum + i.total_price, 0);
+
+      return { items, total_items, total_price };
+    }
+  },
+});
 
   // Add item
   const addMutation = useMutation({
