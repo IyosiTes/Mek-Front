@@ -28,6 +28,11 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    if(form.password !== form.password_confirm){
+        toast.error("Passwords do not match");
+        return;
+    }
 
     try {
       setLoading(true);
@@ -37,15 +42,31 @@ const RegisterPage = () => {
       toast.success("Account created successfully");
 
       navigate("/login");
-    } catch (error: unknown) {
-         let message = "Resgistration failed";
-    if (error instanceof AxiosError) {
-    message =
-      error.response?.data?.detail ||
-      error.response?.data?.message ||
-      message;
+  } catch (error: unknown) {
+  let message = "Registration failed";
+
+  if (error instanceof AxiosError) {
+    const data = error.response?.data;
+
+    if (data) {
+      if (typeof data === "string") {
+        message = data;
+      } else if (data.detail) {
+        message = data.detail;
+      } else if (data.message) {
+        message = data.message;
+      } else if (data.non_field_errors) {
+        message = data.non_field_errors.join(", ");
+      } else if (typeof data === "object") {
+        const errors = Object.entries(data)
+          .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
+          .join(" | ");
+
+        if (errors) message = errors;
+      }
+    }
   }
-   
+
   toast.error(message);
 }
      finally {
