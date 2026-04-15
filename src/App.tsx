@@ -31,8 +31,8 @@ export default function App() {
           <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/Forgot-Password" element={<ForgotPasswordPage />}/>
-        <Route path="/Reset-password" element={<ResetPasswordPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />}/>
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
          <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/refund" element={<RefundPolicy />} />
