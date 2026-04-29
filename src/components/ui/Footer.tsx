@@ -5,6 +5,7 @@ import {
   FaTwitter,
   FaInstagram,
   FaDiscord,
+  FaPhone,
 } from "react-icons/fa";
 
 export default function Footer() {
@@ -46,6 +47,22 @@ export default function Footer() {
             </a>
           ))}
         </div>
+
+         
+ {/* CONTACT */}
+<div className="flex flex-col items-center gap-2 text-gray-400">
+  <span className="text-xs uppercase tracking-widest">
+    Contact
+  </span>
+
+  <a
+    href="tel:+251946250695"
+    className="flex items-center gap-2 px-5 py-2 border border-gray-600 rounded-full hover:border-white hover:text-white transition text-sm"
+  >
+    <FaPhone size={14} />
+    +251 946 250 695
+  </a>
+</div>
 
         {/* Divider */}
         <div className="w-full border-t border-gray-700" />
