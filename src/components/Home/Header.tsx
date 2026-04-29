@@ -14,7 +14,7 @@ export default function Header() {
           Welcome
         </h1>
         <p className="text-burg text-base sm:text-lg md:text-xl xl:text-2xl 2xl:text-3xl mt-6">
-          The first ecommerce platform for Ethiopian Orthodox goods and services
+          Ethiopia Orthodox Tewahedo Church community platform.
         </p>
 
         {/* Reusable SearchBar */}
