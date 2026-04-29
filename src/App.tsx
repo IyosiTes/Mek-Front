@@ -18,6 +18,10 @@ import PrivacyPolicy from "./components/Pages/PrivacyPolicy";
 import TermsOfService from "./components/Pages/TermOfService";
 import RefundPolicy from "./components/Pages/RefundPolicy";
 import ShippingPolicy from "./components/Pages/ShippingPolicy";
+import FeedPage from "../src/community/pages/FeedPage";
+import PostDetailPage from "../src/community/pages/PostDetail";
+import CommunityLayout from "./components/Layouts/CommunityLayout";
+import CreatePostPage from "./community/pages/CreatePostPage";
 
 
 
@@ -39,14 +43,19 @@ export default function App() {
             <Route path="/shipping" element={<ShippingPolicy />} />
           </Route>
         <Route path='/' element={<Layout />}>
-       <Route index element={<HomePage />} />  
-           <Route path ="/profile" element={<UserProfile/>}/>
+          <Route index element={<HomePage />} />  
+          <Route path ="/profile" element={<UserProfile/>}/>
           <Route path ="/cart" element={<CartPage />} />
           <Route path="/products/:slug" element={<ProductDetailPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-success/:id" element={<OrderSuccessPage />} />
           <Route path="*" element={<NotFoundPage />} />
             <Route path="/orders" element={<OrdersPage />} />
+        </Route>
+        <Route element={<CommunityLayout />}>
+          <Route path="/community" element={<FeedPage />} />
+          <Route path="/community/create" element={<CreatePostPage />} />
+          <Route path="/community/post/:id" element={<PostDetailPage />} />
         </Route>
      </Routes>
     

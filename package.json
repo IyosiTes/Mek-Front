@@ -23,7 +23,8 @@
     "react-router-dom": "^7.11.0",
     "react-spinners": "^0.17.0",
     "react-toastify": "^11.0.5",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
