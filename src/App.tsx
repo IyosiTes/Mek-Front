@@ -18,15 +18,13 @@ import PrivacyPolicy from "./components/Pages/PrivacyPolicy";
 import TermsOfService from "./components/Pages/TermOfService";
 import RefundPolicy from "./components/Pages/RefundPolicy";
 import ShippingPolicy from "./components/Pages/ShippingPolicy";
-import FeedPage from "../src/community/pages/FeedPage";
+import CommunityFeed from "../src/community/pages/CommunityFeed";
 import PostDetailPage from "../src/community/pages/PostDetail";
 import CommunityLayout from "./components/Layouts/CommunityLayout";
-import CreatePostPage from "./community/pages/CreatePostPage";
-
-
-
-
-
+import CreatePost from "./community/pages/CreatePost";
+import SearchPage from "./community/pages/Explore";
+import NotificationPage from "./components/notifications/NotificatioPage";
+import ProfilePage from "./community/pages/ProfilePage";
 
 export default function App() {
   return (
@@ -53,9 +51,12 @@ export default function App() {
             <Route path="/orders" element={<OrdersPage />} />
         </Route>
         <Route element={<CommunityLayout />}>
-          <Route path="/community" element={<FeedPage />} />
-          <Route path="/community/create" element={<CreatePostPage />} />
+          <Route path="/community" element={<CommunityFeed />} />
+          <Route path="/community/create" element={<CreatePost />} />
           <Route path="/community/post/:id" element={<PostDetailPage />} />
+          <Route path="/community/search" element={<SearchPage />} />
+          <Route path="/community/notifications" element={<NotificationPage/>} />
+          <Route path="/community/profile" element={<ProfilePage />} />
         </Route>
      </Routes>
     
