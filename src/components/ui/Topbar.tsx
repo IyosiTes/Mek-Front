@@ -33,7 +33,7 @@ export default function Topbar() {
         <ProfileMenu />
           ) : (
       <Link to="/login">
-      <FaUser className="w-4 h-4 sm:w-5 sm:h-5 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 cursor-pointer hover:text-burg transition" />
+      <FaUser className="w-4 h-4 sm:w-5 sm:h-5 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 cursor-pointer hover:text-Hover transition" />
       </Link>
           )}
           <Link to="/cart" className="relative items-center inline-flex">
