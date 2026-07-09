@@ -13,7 +13,7 @@ export default function Header() {
         <h1 className="text-burg font-bold text-3xl sm:text-4xl md:text-5xl xl:text-6xl mt-9 2xl:text-7xl">
           Welcome
         </h1>
-        <p className="text-burg text-base sm:text-lg md:text-xl xl:text-2xl 2xl:text-3xl mt-6">
+        <p className="text-burg font-poppins text-base sm:text-lg md:text-xl xl:text-2xl 2xl:text-3xl mt-6">
           Ethiopia Orthodox Tewahedo Church community platform.
         </p>
 
