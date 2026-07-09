@@ -1,86 +1,157 @@
 import { useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
+import axios from "axios";
+
+import AuthCard from "../../community/components/AuthCard";
+import AuthHeader from "../../components/ui/AuthHeader";
+import AuthInput from "../../community/components/AuthInput";
+import AuthButton from "../../components/ui/Authbutton";
+
+import { login } from "../../api/auth";
 
 export default function LoginPage() {
-  const { login } = useAuth();
   const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
+
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [error, setError] = useState("");
+
+  async function handleSubmit(
+    e: React.FormEvent
+  ) {
     e.preventDefault();
+
+    if (!username.trim() || !password) {
+      setError("Please enter your username and password.");
+      return;
+    }
+
     setLoading(true);
+    setError("");
+
     try {
-      await login(username, password);
-      navigate("/cart"); 
-    } catch (err) {
-      console.error(err);
-      alert("invalid login");
+      const tokens = await login(
+        username.trim(),
+        password
+      );
+
+      localStorage.setItem(
+        "access",
+        tokens.access
+      );
+
+      localStorage.setItem(
+        "refresh",
+        tokens.refresh
+      );
+
+      navigate("/community", {
+        replace: true,
+      });
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data;
+
+        if (typeof data === "string") {
+          setError(data);
+        } else if (data?.detail) {
+          setError(data.detail);
+        } else {
+          setError("Invalid username or password.");
+        }
+      } else {
+        setError("Something went wrong.");
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-white px-4 py-10">
-      
-      {/* 🔙 Back Button */}
-      <button
-        onClick={() => navigate("/")}
-        className="absolute top-4 left-4 flex items-center gap-2 text-gray-600 hover:text-black transition px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 shadow-sm z-50"
+    <AuthCard>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6"
       >
-        <FaArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-        <span className="text-sm sm:text-base">Back</span>
-      </button>
+        <AuthHeader
+          title="Welcome Back"
+          subtitle="Sign in to your Mekwerab account."
+        />
 
-      {/* Login Form */}
-      <form 
-        onSubmit={handleSubmit} 
-        className="w-full max-w-sm sm:max-w-md lg:max-w-lg bg-ivory shadow-md rounded-xl p-6 sm:p-8 space-y-6"
-      >
-        <h2 className="text-2xl font-semibold text-gray-800 text-center">Login</h2>
+        {error && (
+          <div
+            className="
+            rounded-xl
+            border
+            border-red-600
+            bg-red-900/30
+            px-4
+            py-3
+            text-sm
+            text-red-300
+            "
+          >
+            {error}
+          </div>
+        )}
 
-        <input
-          type="text"
-          placeholder="Username"
+        <AuthInput
+          autoFocus
+          label="Username"
+          placeholder="IyosI Tes"
+          className="placeholder:font-poppins"
+          autoComplete="username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="w-full border rounded-md px-3 bg-white py-2 focus:outline-none focus:ring-2 focus:ring-black"
-          required
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-black"
-          required
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-main text-white py-2.5 rounded-md hover:opacity-90 transition"
+          onChange={(e) =>
+            setUsername(e.target.value)
+          }
           disabled={loading}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-        <p className="text-sm text-center mt-2">
-  <Link to="/forgot-password" className="text-blue-600 hover:underline">
-    Forgot Password?
-  </Link>
-</p>
+        />
 
-        <p className="text-sm text-center mt-3">
-          No account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
-            Register
+        <AuthInput
+          label="Password"
+          type="password"
+          placeholder="********"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) =>
+            setPassword(e.target.value)
+          }
+          disabled={loading}
+        />
+
+        <div className="flex justify-end">
+          <Link
+            to="/forgot-password"
+            className="
+            text-sm
+            text-zinc-400
+            hover:text-red-400
+            transition
+            "
+          >
+            Forgot password?
+          </Link>
+        </div>
+
+        <AuthButton loading={loading}>
+          Sign In
+        </AuthButton>
+
+        <p className="text-center text-sm text-zinc-400">
+          Don't have an account?{" "}
+          <Link
+            to="/register"
+            className="text-red-400 hover:text-red-300"
+          >
+          Create one 
           </Link>
         </p>
       </form>
-    </div>
+    </AuthCard>
   );
 }
