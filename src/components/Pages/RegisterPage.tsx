@@ -1,172 +1,199 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import api from "../../api/api";
-import { toast } from "react-toastify";
-import  { AxiosError } from "axios";
-import { FaArrowLeft } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const RegisterPage = () => {
+import AuthCard from "../../community/components/AuthCard";
+import AuthHeader from "../../components/ui/AuthHeader";
+import AuthInput from "../../community/components/AuthInput";
+import AuthButton from "../../components/ui/Authbutton";
+
+import {
+  register,
+  login,
+} from "../../api/auth";
+
+export default function RegisterPage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     username: "",
-    phone_number: "",
     email: "",
-    address: "",
     password: "",
     password_confirm: "",
   });
 
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({
-      ...form,
+  const [error, setError] = useState("");
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
-  
-    if(form.password !== form.password_confirm){
-        toast.error("Passwords do not match");
-        return;
+
+    if (form.password !== form.password_confirm) {
+      setError("Passwords do not match.");
+      return;
     }
+
+    setLoading(true);
+    setError("");
 
     try {
-      setLoading(true);
+      await register(form);
 
-      await api.post("/auth/register/", form);
+      const tokens = await login(
+        form.username,
+        form.password
+      );
 
-      toast.success("Account created successfully");
+      localStorage.setItem(
+        "access",
+        tokens.access
+      );
 
-      navigate("/login");
-  } catch (error: unknown) {
-  let message = "Registration failed";
+      localStorage.setItem(
+        "refresh",
+        tokens.refresh
+      );
 
-  if (error instanceof AxiosError) {
-    const data = error.response?.data;
+      navigate("/community", {
+        replace: true,
+      });
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data;
 
-    if (data) {
-      if (typeof data === "string") {
-        message = data;
-      } else if (data.detail) {
-        message = data.detail;
-      } else if (data.message) {
-        message = data.message;
-      } else if (data.non_field_errors) {
-        message = data.non_field_errors.join(", ");
-      } else if (typeof data === "object") {
-        const errors = Object.entries(data)
-          .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
-          .join(" | ");
+        if (typeof data === "string") {
+          setError(data);
+        } else if (data?.detail) {
+          setError(data.detail);
+        } else if (data) {
+          const firstError = Object.values(data)
+            .flat()
+            .join(" ");
 
-        if (errors) message = errors;
+          setError(
+            firstError ||
+              "Unable to create your account."
+          );
+        } else {
+          setError(
+            "Unable to create your account."
+          );
+        }
+      } else {
+        setError("Something went wrong.");
       }
-    }
-  }
-
-  toast.error(message);
-}
-     finally {
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4">
-        <button
-              onClick={() => navigate("/")}
-              className="absolute top-4 left-4 flex items-center gap-2 text-gray-600 hover:text-black transition px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 shadow-sm z-50"
-            >
-              <FaArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="text-sm sm:text-base">Back</span>
-            </button>
+    <AuthCard>
       <form
         onSubmit={handleSubmit}
-        className=" w-full 
-    max-w-sm 
-    sm:max-w-md 
-    lg:max-w-lg 
-    bg-ivory
-    shadow-md 
-    rounded-xl 
-    p-6 
-    sm:p-8 
-    space-y-4"
+        className="space-y-6"
       >
-        <h2 className="text-xl font-semibold text-center text-main">
-          Create Account
-        </h2>
+        <AuthHeader
+          title="Create your account"
+          subtitle="አንድ የምኵራብ መለያ ብቻ በመጠቀም ወደ አገልግሎቶች መዳረስ ይችላሉ።"
+        />
 
-        <input
+        {error && (
+          <div
+            className="
+              rounded-xl
+              border
+              border-red-600
+              bg-red-900/30
+              px-4
+              py-3
+              text-sm
+              text-red-300
+            "
+          >
+            {error}
+          </div>
+        )}
+
+        <AuthInput
+          label="Username"
           name="username"
-          placeholder="Username"
+          autoComplete="username"
+          placeholder="Iyosi Tes"
+           className="placeholder:font-poppins"
+          value={form.username}
           onChange={handleChange}
-          required
-          className="w-full border border-Hover bg-white rounded px-3 py-2"
-        />
-
-        <input
-          name="phone_number"
-          placeholder="Phone Number"
-          onChange={handleChange}
-          required
-          className="w-full border border-Hover bg-white rounded px-3 py-2"
-        />
-
-         <input
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-          required
-          className="w-full border border-Hover bg-white rounded px-3 py-2"
-        />
-
-        <input
-          name="address"
-          placeholder="address"
-          onChange={handleChange}
-          required
-          className="w-full border border-Hover bg-white rounded px-3 py-2"
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-          required
-          className="w-full border border-Hover bg-white rounded px-3 py-2"
-        />
-
-        <input
-          type="password"
-          name="password_confirm"
-          placeholder="Confirm Password"
-          onChange={handleChange}
-          required
-          className="w-full border bg-white rounded border-main px-3 py-2"
-        />
-
-        <button
-          type="submit"
           disabled={loading}
-          className="w-full bg-main text-white py-2 rounded hover:opacity-90"
-        >
-          {loading ? "Creating..." : "Create Account"}
-        </button>
+          required
+        />
 
-        <p className="text-sm text-center">
+        <AuthInput
+          label="Email"
+          name="email"
+          type="email"
+          placeholder="Iyosi@gmail.com"
+           className="placeholder:font-poppins"
+          autoComplete="email"
+          value={form.email}
+          onChange={handleChange}
+          disabled={loading}
+          required
+        />
+
+        <AuthInput
+          label="Password"
+          name="password"
+          type="password"
+          placeholder="********"
+          autoComplete="new-password"
+          value={form.password}
+          onChange={handleChange}
+          disabled={loading}
+          required
+        />
+
+        <AuthInput
+          label="Confirm Password"
+          name="password_confirm"
+          type="password"
+          placeholder="********"
+          autoComplete="new-password"
+          value={form.password_confirm}
+          onChange={handleChange}
+          disabled={loading}
+          required
+        />
+
+        <AuthButton loading={loading}>
+          Create Account
+        </AuthButton>
+
+        <p className="text-center text-sm text-zinc-400">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600">
-            Login
+          <Link
+            to="/login"
+            className="
+              text-red-400
+              hover:text-red-300
+              transition
+            "
+          >
+            Sign In
           </Link>
         </p>
       </form>
-    </div>
+    </AuthCard>
   );
-};
-
-export default RegisterPage;
+}
