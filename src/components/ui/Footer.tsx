@@ -19,7 +19,7 @@ export default function Footer() {
           className="text-2xl md:text-3xl font-bold tracking-tight"
           style={{ fontFamily: "Helvetica, Arial, sans-serif" }}
         >
-          Mekwerab
+          ምኵራብ
         </Link>
 
         {/* Tagline */}
@@ -52,7 +52,7 @@ export default function Footer() {
  {/* CONTACT */}
 <div className="flex flex-col items-center gap-2 text-gray-400">
   <span className="text-xs uppercase tracking-widest">
-    Contact
+    Contact Us
   </span>
 
   <a
@@ -60,7 +60,7 @@ export default function Footer() {
     className="flex items-center gap-2 px-5 py-2 border border-gray-600 rounded-full hover:border-white hover:text-white transition text-sm"
   >
     <FaPhone size={14} />
-    +251 946 250 695
+    +251 964172402
   </a>
 </div>
 
