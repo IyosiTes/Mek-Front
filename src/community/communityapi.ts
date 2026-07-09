@@ -1,63 +1,180 @@
 import api from "../api/api";
 
-// GET POSTS (returns array directly for UI)
-export const getPosts = async (page = 1) => {
+/* -------------------- POSTS -------------------- */
+
+export async function getPosts(page = 1) {
   const res = await api.get(`/community/posts/?page=${page}`);
-  return res.data.results; // 🔥 FIX: prevents .map error
-};
+  return res.data.results;
+}
 
-// GET SINGLE POST
-export const getPost = async (postId: number) => {
-  const res = await api.get(`/community/posts/${postId}/`);
+export async function getPost(publicId: number) {
+  const res = await api.get(`/community/posts/${publicId}/`);
   return res.data;
-};
+}
 
-// CREATE POST
-export const createPost = async (data: {
+export async function createPost(data: {
   content: string;
-  anonymous_id: string;
-  user_name?: string;
-}) => {
-  const res = await api.post(`/community/posts/`, data);
-  return res.data;
-};
+  image_url?: string;
+}) {
+  const res = await api.post(
+    "/community/posts/create/",
+    data
+  );
 
-// GET COMMENTS (normalize to array)
-export const getComments = async (postId: number, page = 1) => {
+  return res.data;
+}
+
+export async function updatePost(
+  publicId: number,
+  data: {
+    content: string;
+    image_url?: string;
+  }
+) {
+  const res = await api.patch(
+    `/community/posts/${publicId}/edit/`,
+    data
+  );
+
+  return res.data;
+}
+
+export async function deletePost(
+  publicId: number
+) {
+  const res = await api.post(
+    `/community/posts/${publicId}/delete/`
+  );
+
+  return res.data;
+}
+
+/* -------------------- COMMENTS -------------------- */
+
+export async function getComments(
+  postId: number,
+  page = 1
+) {
   const res = await api.get(
     `/community/posts/${postId}/comments/?page=${page}`
   );
 
-  // handle both paginated and non-paginated backend safely
-  return res.data.results ?? res.data;
-};
+  return res.data.results;
+}
 
-// CREATE COMMENT / REPLY
-export const createComment = async (
+export async function createComment(
   postId: number,
   data: {
     content: string;
-    anonymous_id: string;
-    parent_id?: number;
+    parent?: number | null;
   }
-) => {
+) {
   const res = await api.post(
-    `/community/posts/${postId}/comment/`,
+    `/community/posts/${postId}/comments/create/`,
     data
   );
-  return res.data;
-};
 
-export const reactToComment = async (
-  commentId: number,
-  data: {
-    reaction_type: "like" | "dislike";
-    anonymous_id: string;
-  }
-) => {
-  const res = await api.post(
-    `/community/comments/${commentId}/react/`,
-    data
-  );
   return res.data;
-};
+}
+
+export async function updateComment(
+  commentId: number,
+  content: string
+) {
+  const res = await api.patch(
+    `/community/comments/${commentId}/edit/`,
+    {
+      content,
+    }
+  );
+
+  return res.data;
+}
+
+export async function deleteComment(
+  commentId: number
+) {
+  const res = await api.post(
+    `/community/comments/${commentId}/delete/`
+  );
+
+  return res.data;
+}
+
+/* -------------------- VOTES -------------------- */
+
+export async function votePost(
+  postId: number,
+  value: -1 | 0 | 1
+) {
+  const res = await api.post(
+    "/community/vote/",
+    {
+      post_id: postId,
+      value,
+    }
+  );
+
+  return res.data;
+}
+
+export async function voteComment(
+  commentId: number,
+  value: -1 | 0 | 1
+) {
+  const res = await api.post(
+    "/community/vote/",
+    {
+      comment_id: commentId,
+      value,
+    }
+  );
+
+  return res.data;
+}
+
+/* -------------------- NOTIFICATIONS -------------------- */
+
+export async function getNotifications(
+  page = 1
+) {
+  const res = await api.get(
+    `/community/notifications/?page=${page}`
+  );
+
+  return res.data.results;
+}
+
+export async function getUnreadCount() {
+  const res = await api.get(
+    "/community/notifications/unread-count/"
+  );
+
+  return res.data.count;
+}
+
+export async function markNotificationRead(
+  id: number
+) {
+  const res = await api.post(
+    `/community/notifications/${id}/mark-read/`
+  );
+
+  return res.data;
+}
+
+export async function markAllNotificationsRead() {
+  const res = await api.post(
+    "/community/notifications/mark-all-read/"
+  );
+
+  return res.data;
+}
+
+export async function deleteNotification(
+  id: number
+) {
+  await api.delete(
+    `/community/notifications/${id}/delete/`
+  );
+}
