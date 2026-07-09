@@ -7,7 +7,7 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({
-  placeholderTexts = ["Search products...", "Find your favorites..."],
+  placeholderTexts = ["Search products...", "Find your favorites...", "Coming Soon...",],
   onSearch,
 }: SearchBarProps) {
   const [query, setQuery] = useState("");
@@ -46,6 +46,7 @@ export default function SearchBar({
     >
       <input
         type="text"
+        readOnly
         value={query}
         onChange={e => setQuery(e.target.value)}
         placeholder={placeholder}
