@@ -1,73 +1,137 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import axios from "axios";
+
+import AuthCard from "../../community/components/AuthCard";
+import AuthHeader from "../../components/ui/AuthHeader";
+import AuthInput from "../../community/components/AuthInput";
+import AuthButton from "../../components/ui/Authbutton";
+
 import api from "../../api/api";
-import { toast } from "react-toastify";
-import { FaArrowLeft } from "react-icons/fa";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState("");
+
+  const [success, setSuccess] =
+    useState(false);
+
+  async function handleSubmit(
+    e: React.FormEvent
+  ) {
     e.preventDefault();
 
+    setLoading(true);
+    setError("");
+
     try {
-      setLoading(true);
+      await api.post(
+        "/auth/forgot-password/",
+        {
+          email,
+        }
+      );
 
-      await api.post("/auth/forgot-password/", { email });
-
-      toast.success("If this email exists, a reset link was sent");
+      setSuccess(true);
     } catch (err: unknown) {
-        console.error(err)
-      toast.error("Something went wrong");
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data;
+
+        if (typeof data === "string") {
+          setError(data);
+        } else if (data?.detail) {
+          setError(data.detail);
+        } else {
+          setError(
+            "Unable to send reset link."
+          );
+        }
+      } else {
+        setError("Something went wrong.");
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-white px-4">
-      
-      {/* 🔙 Back */}
-      <button
-        onClick={() => navigate("/login")}
-        className="absolute top-4 left-4 flex items-center gap-2 text-gray-600 hover:text-black transition px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 shadow-sm"
-      >
-        <FaArrowLeft />
-        Back
-      </button>
+    <AuthCard>
+      {success ? (
+        <div className="space-y-6 text-center">
+          <AuthHeader
+            title="Check your email"
+            subtitle="If an account exists for that email, we've sent a password reset link."
+          />
 
-      {/* Card */}
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm sm:max-w-md bg-ivory shadow-md rounded-xl p-6 sm:p-8 space-y-5"
-      >
-        <h2 className="text-xl font-semibold text-center text-main">
-          Forgot Password
-        </h2>
-
-        <p className="text-sm text-gray-500 text-center">
-          Enter your email and we’ll send you a reset link
-        </p>
-
-        <input
-          type="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full border border-Hover bg-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-main"
-        />
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-main text-white py-2 rounded hover:opacity-90 transition"
+          <Link
+            to="/login"
+            className="
+            inline-block
+            text-red-400
+            hover:text-red-300
+            transition
+            "
+          >
+            Back to Sign In
+          </Link>
+        </div>
+      ) : (
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6"
         >
-          {loading ? "Sending..." : "Send Reset Link"}
-        </button>
-      </form>
-    </div>
+          <AuthHeader
+            title="Forgot Password"
+            subtitle="Enter your email and we'll send you a password reset link."
+          />
+
+          {error && (
+            <div
+              className="
+              rounded-xl
+              border
+              border-red-600
+              bg-red-900/30
+              px-4
+              py-3
+              text-sm
+              text-red-300
+              "
+            >
+              {error}
+            </div>
+          )}
+
+          <AuthInput
+            label="Email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            placeholder="Iyosi@gmail.com"
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
+            disabled={loading}
+          />
+
+          <AuthButton loading={loading}>
+            Send Reset Link
+          </AuthButton>
+
+          <p className="text-center text-sm text-zinc-400">
+            Remember your password?{" "}
+            <Link
+              to="/login"
+              className="text-red-400 hover:text-red-300"
+            >
+              Sign In
+            </Link>
+          </p>
+        </form>
+      )}
+    </AuthCard>
   );
 }
