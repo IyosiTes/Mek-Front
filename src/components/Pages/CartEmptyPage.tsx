@@ -10,7 +10,7 @@ export default function CartEmptyPage() {
         <h2 className="text-2xl font-bold mb-3 text-gray-800">
           Your Cart is Empty
         </h2>
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 font-poppins mb-6">
           You haven’t added any items yet. Let’s fill your cart!
         </p>
 
