@@ -1,6 +1,6 @@
 import type{ Product } from "../../types/product";
 import { HomeCard } from "./HomeCard";
-
+import { AddProductCard } from "./AddProduct";
 type CardContainerProps = { 
   products: Product[]; 
 };
@@ -14,6 +14,7 @@ export function CardContainer({ products }: CardContainerProps) {
         <HomeCard key={product.id} product={product} />
    
       ))}
+      <AddProductCard />
     </div>
   );
 }
