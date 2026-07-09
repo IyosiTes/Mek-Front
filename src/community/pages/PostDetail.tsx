@@ -1,124 +1,222 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
-import { getComments, createComment, getPost } from "../communityapi";
-import CommentItem from "../components/commentItem";
-import { getAnonId } from "../getAnonId";
-import type { Comment, Post } from "../../types/communities";
-import LoaderSpinner from "../../components/ui/LoadingSpinner";
-import { FiArrowLeft } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
+
+import {
+  getPost,
+  getComments,
+} from "../communityapi";
+
+import PostDetailCard from "../components/PostDetailCard";
+import CommentList from "../components/commentList";
+import ReplyBox from "../components/ReplyBox";
+
+import type {
+  Post,
+  Comment,
+} from "../../types/communities";
 
 export default function PostDetail() {
   const { id } = useParams();
   const nav = useNavigate();
 
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [newComment, setNewComment] = useState("");
-  const [posting, setPosting] = useState(false);
+  const [post, setPost] =
+    useState<Post | null>(null);
 
+  const [comments, setComments] =
+    useState<Comment[]>([]);
+  
+  const [replyingTo, setReplyingTo] =
+  useState<Comment | null>(null);  
 
-const loadData = useCallback(async () => {
-  setLoading(true);
+  const [loading, setLoading] =
+    useState(true);
 
-  try {
-    const [postRes, commentRes] = await Promise.all([
-      getPost(Number(id)),
-      getComments(Number(id)),
-    ]);
+  
 
-    setPost(postRes);
-    setComments(commentRes);
-  } catch (err) {
-    console.error("Failed to load data", err);
-  } finally {
-    setLoading(false);
-  }
-}, [id]);
+  useEffect(() => {
+    async function load() {
+      try {
+        const [postData, commentsData] =
+          await Promise.all([
+            getPost(Number(id)),
+            getComments(Number(id)),
+          ]);
 
-useEffect(() => {
-  loadData();
-}, [loadData]);
+        setPost(postData);
+        setComments(commentsData);
+      } finally {
+        setLoading(false);
+      }
+    }
 
- 
-
-const handleComment = async () => {
-  if (!newComment.trim() || posting) return;
-
-  setPosting(true);
-
-  try {
-    const newC = await createComment(Number(id), {
-      content: newComment,
-      anonymous_id: getAnonId(),
-    });
-
-    setComments((prev) => [newC, ...prev]);
-    setNewComment("");
-  } catch (err) {
-    console.error(err);
-  } finally {
-    setPosting(false);
-  }
-};
+    load();
+  }, [id]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoaderSpinner />
+      <div className="min-h-screen bg-black text-white">
+        <div className="sticky top-0 h-16 border-b border-zinc-900 bg-black" />
+
+        <div className="max-w-2xl mx-auto p-5 space-y-4 animate-pulse">
+          <div className="h-10 w-10 rounded-full bg-zinc-800" />
+
+          <div className="h-5 w-44 rounded bg-zinc-800" />
+
+          <div className="space-y-2">
+            <div className="h-4 rounded bg-zinc-900" />
+            <div className="h-4 rounded bg-zinc-900" />
+            <div className="h-4 w-2/3 rounded bg-zinc-900" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-black text-white min-h-screen p-4 pb-24">
-      
-      {/* HEADER */}
-      <div className="flex items-center gap-2 mb-4">
-        <button onClick={() => nav(-1)}>
-          <FiArrowLeft />
-        </button>
-        <span className="text-sm text-gray-400">Post #{id}</span>
-      </div>
+    <div
+      className="
+      min-h-screen
+      bg-black
+      text-white
+      pb-40
+      "
+    >
+      {/* Header */}
 
-      {/*  POST CARD */}
-      {post && (
-        <div className="bg-[#1a1a1a] p-4 rounded-xl mb-4">
-          <div className="text-sm text-gray-400">
-            {post.user_name} • {post.time_ago}
-          </div>
-          <p className="mt-2">{post.content}</p>
-        </div>
-      )}
-
-      {/* COMMENTS */}
-      <div className="space-y-3">
-        {comments.map((c) => (
-          <CommentItem
-            key={c.id}
-            comment={c}
-            postId={Number(id)}
+      <header
+        className="
+        sticky
+        top-0
+        z-40
+        border-b
+        border-zinc-900
+        bg-black/90
+        backdrop-blur-xl
+        "
+      >
+        <button
+          onClick={() => nav("/community")}
+          className="
+          w-full
+          flex
+          items-center
+          gap-3
+          px-4
+          py-3
+          "
+        >
+          <ArrowLeft
+            size={20}
+            className="text-zinc-400"
           />
-        ))}
-      </div>
 
-      {/* INPUT */}
-      <div className="fixed bottom-0 left-0 w-full bg-black border-t border-gray-800 p-3 flex gap-2">
-        <input
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add your answer..."
-          className="flex-1 bg-[#1a1a1a] p-2 rounded"
-        />
+          <div className="text-left">
+            <h1 className="font-semibold">
+              Post #{post?.public_id}
+            </h1>
 
-       <button
-  onClick={handleComment}
-  disabled={!newComment.trim() || posting}
-  className="bg-main px-4 rounded disabled:opacity-50"
->
-  {posting ? "Posting..." : "Post"}
-</button>
-      </div>
+            <p className="text-xs text-zinc-500">
+              ውይይቶች
+            </p>
+          </div>
+        </button>
+      </header>
+
+      <main
+        className="
+        max-w-2xl
+        mx-auto
+        animate-in
+        fade-in
+        duration-300
+        "
+      >
+        {post && (
+          <PostDetailCard
+            post={post}
+          />
+        )}
+
+        {/* Replies Header */}
+
+        <section
+          className="
+          px-5
+          py-4
+          border-b
+          border-zinc-900
+          "
+        >
+          <div className="flex items-center justify-between">
+            <h2
+              className="
+              text-sm
+              font-semibold
+              tracking-wide
+              uppercase
+              text-zinc-400
+              "
+            >
+              ግብረ-መልሶች
+            </h2>
+
+            <span
+              className="
+              text-sm
+              text-zinc-500
+              "
+            >
+              {comments.length}
+            </span>
+          </div>
+        </section>
+
+        {comments.length === 0 ? (
+          <div
+            className="
+            py-20
+            px-6
+            text-center
+            "
+          >
+            <div className="text-4xl mb-4">
+              💬
+            </div>
+
+            <h3 className="text-lg font-medium">
+              No replies yet
+            </h3>
+
+            <p
+              className="
+              mt-2
+              text-sm
+              text-zinc-500
+              "
+            >
+              ውይይቱን ለማስጀመር ፈር ቀዳጅ ይሁኑ
+            </p>
+          </div>
+        ) : (
+          <CommentList
+              comments={comments}
+              onReply={setReplyingTo}
+/>
+        )}
+      </main>
+
+      <ReplyBox
+    postId={Number(id)}
+    replyingTo={replyingTo}
+    setReplyingTo={setReplyingTo}
+    onCommentCreated={(comment) =>
+      setComments((prev) => [
+        comment,
+        ...prev,
+      ])
+    }
+/>
     </div>
   );
 }
