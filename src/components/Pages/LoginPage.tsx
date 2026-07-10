@@ -102,7 +102,7 @@ export default function LoginPage() {
         <AuthInput
           autoFocus
           label="Username"
-          placeholder="IyosI Tes"
+          placeholder="IyosI_Tes"
           className="placeholder:font-poppins"
           autoComplete="username"
           value={username}
