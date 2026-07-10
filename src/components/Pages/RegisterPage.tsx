@@ -131,7 +131,7 @@ export default function RegisterPage() {
           label="Username"
           name="username"
           autoComplete="username"
-          placeholder="Iyosi Tes"
+          placeholder="IyosI_Tes"
            className="placeholder:font-poppins"
           value={form.username}
           onChange={handleChange}
