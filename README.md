@@ -1,18 +1,18 @@
 # 🛒 Mekwerab | ምኵራብ Ethiopian Orthodox E-commerce platform
 
-### This project structured as two independent repository
+### This project is structured as two independent repositories
  Backend API: https://github.com/IyosiTes/Mek
 
  ---
  
 ## 🌐 Frontend 
-###  overview
+###  Overview
 Frontend application for the Ethiopian Orthodox e-commerce platform, delivering a modern, responsive user experience for browsing and purchasing religious goods and services.
 
-###  Features  
+###  Features 
 - 🔍 Product browsing & advanced filtering  
 - 🛒 Cart management system  
-- 📦 Seamless order flow integration  
+- 📦 Order and checkout flow integration 
 - 🔗 API-driven architecture
 
 ---
@@ -31,7 +31,7 @@ Frontend application for the Ethiopian Orthodox e-commerce platform, delivering 
   <img src="./public/cart.png" width="30%" />
 </p>
 
-### setup
+### `Setup
 ```bash
  npm install
  npm run dev
@@ -39,7 +39,7 @@ Frontend application for the Ethiopian Orthodox e-commerce platform, delivering 
 
 ---
 
-## check live
+## `Live Demo
 Check out the live project on Vercel: https://mekwerab.vercel.app
 
 ---
